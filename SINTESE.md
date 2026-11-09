@@ -54,7 +54,7 @@ ErroIO.hs:3:17: error:
           saudacao nome = putStrLn ("Ola, " ++ nome)
 ```
 
-**Interpretação:** a assinatura promete devolver uma `String` (`[Char]`), mas `putStrLn` devolve `IO ()`, que é uma ação de imprimir e não um texto. O GHC recusa o programa **antes de rodar**. Em Haskell não existe jeito de esconder um efeito dentro de uma função que diz ser pura: se ela imprime, o tipo tem que dizer `IO`.
+**Interpretação:** a assinatura promete devolver uma `String` (`[Char]`), mas `putStrLn` devolve `IO ()`, que é uma ação de imprimir e não um texto. O GHC recusa o programa **antes de rodar**. No código seguro e nos recursos utilizados neste trabalho, uma impressão é representada por `IO`; a assinatura pura apresentada não aceita essa ação.
 
 O mesmo vale no sentido contrário, quando tentamos usar a entrada como se fosse um valor comum:
 
@@ -68,7 +68,7 @@ ghci> length getLine
 
 ### 2.3 A mesma ideia em C
 
-**[a preencher: experimento da Cecília]** Exemplo em C que acumula o total do carrinho numa variável global, mostrando que duas chamadas iguais da mesma função devolvem resultados diferentes. Incluir o código, a saída real e uma frase comparando com o comportamento de `aplicarCupom`.
+O arquivo `ComparacaoC.c` acumula os subtotais em uma variável global. Na verificação de integração, a saída foi `Funcao com estado: 220.00 e 440.00` e `Funcao pura: 220.00`. A segunda chamada soma novamente ao valor anterior. Em Haskell, `totalCarrinho` devolve 220 nas duas avaliações do mesmo carrinho, sem atualizar um acumulador global. O código completo está no arquivo C e o registro em `experimentos/verificacao-integracao.txt`.
 
 ### 2.4 Conclusão do desafio
 
@@ -127,7 +127,7 @@ Sugestão: o caso do carrinho vazio em `resumoPedido`, que paga R$ 15 de frete s
 
 ## 4. Comparação com a abordagem imperativa
 
-**[a preencher: Cecília]**
+A versão com estado global depende do histórico de chamadas, além dos argumentos. A versão pura calcula o total a partir da lista recebida, o que facilita testes isolados e reutilização. Isso não significa que toda função em C seja impura: a comparação inclui uma função em C sem atualização de estado externo.
 
 ---
 
@@ -162,6 +162,7 @@ Linha da Lívia:
 4. HUDAK, Paul; PETERSON, John; FASEL, Joseph. *A Gentle Introduction to Haskell*, seção "Input/Output". Disponível em: https://www.haskell.org/tutorial/io.html.
 5. HACKAGE. *Prelude* (pacote `base`), documentação de `getLine` e `putStrLn`. Disponível em: https://hackage.haskell.org/package/base/docs/Prelude.html.
 6. O'SULLIVAN, Bryan; GOERZEN, John; STEWART, Don. *Real World Haskell*, capítulo 7 "I/O". Disponível em: https://book.realworldhaskell.org/read/io.html.
-7. Ferramenta: GHC 9.4.7 e GHCi, usados em todos os experimentos desta síntese.
+7. Ferramenta: GHC 9.4.7 e GHCi, conforme registro original de Lívia; revisão de integração executada com GHC 9.0.2, identificada separadamente em `experimentos/verificacao-integracao.txt`.
+8. ChatGPT: apoio à preparação e revisão de código, testes e documentação. A equipe deve revisar e reproduzir os experimentos antes da apresentação.
 
 **[a preencher]** Fontes enviadas pelos outros integrantes, no mesmo formato.

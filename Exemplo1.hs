@@ -9,3 +9,6 @@ main = do
   print (subtotalItem item)
   print (totalCarrinho carrinho)
   print (totalCarrinho carrinho)
+  putStrLn "Substituicao da chamada pelo resultado: esperado 50.0 nas duas"
+  print (subtotalItem item + 15)
+  print (35 + 15 :: Double)

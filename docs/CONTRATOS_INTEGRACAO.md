@@ -19,8 +19,10 @@ calcularFrete :: Double -> Double
 
 -- Luiza: Pedido.hs, modulo Pedido
 resumoPedido :: [Item] -> Double -> (Double, Double, Double)
--- recebe itens e percentual de cupom, devolve (subtotal, frete, total)
+-- recebe itens e percentual de cupom, devolve (subtotal original, frete, total)
 -- integra totalCarrinho, aplicarCupom e calcularFrete.
 ```
 
 Exemplos: aplicarCupom 10 100 = 90; calcularFrete 199 = 15; calcularFrete 200 = 0. No resumo, o frete considera o subtotal apos desconto. Os colegas podem adaptar os contratos juntos antes da integracao, mas devem atualizar este documento e imports em conjunto.
+
+Exemplo obrigatório integrado: resumoPedido [("Caderno",25,4),("Mochila",120,1)] 10 = (220,15,213). O subtotal retornado não perde o desconto; apenas permanece como o valor original para consulta.

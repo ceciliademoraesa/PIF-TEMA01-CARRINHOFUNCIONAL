@@ -1,3 +1,5 @@
+> Atualização de integração: a divergência histórica descrita abaixo foi corrigida em Pedido.hs e TestesLuiza.hs. O retorno atual é (220,15,213). Os relatos abaixo preservam o registro da revisão original de Victor.
+
 # Parte de Victor: calcularFrete
 
 ## Regra e implementacao

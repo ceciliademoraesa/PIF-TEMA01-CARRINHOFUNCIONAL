@@ -1,0 +1,150 @@
+Verificacao de integracao em 09/11/2026; GHC 9.0.2.
+Compilacao de cada executavel com -Wall -Werror, em diretorios separados.
+Os comandos abaixo sao os equivalentes portaveis, executados a partir da raiz.
+
+$ ghc -Wall -Werror Exemplo1.hs
+Compilacao OK, sem avisos.
+Execucao:
+Exemplo de funcao pura e transparencia referencial
+35.0
+35.0
+220.0
+220.0
+Substituicao da chamada pelo resultado: esperado 50.0 nas duas
+50.0
+50.0
+
+
+$ ghc -Wall -Werror Aplicacao.hs
+Compilacao OK, sem avisos.
+Execucao:
+Itens: caderno de 25 x 4, mochila de 120 x 1
+[("Caderno",25.0,4),("Mochila",120.0,1)]
+Subtotal do caderno (esperado 100):
+100.0
+Subtotal do carrinho (esperado 220):
+220.0
+Cupom de 10% (esperado 198):
+198.0
+Frete apos desconto (esperado 15):
+15.0
+Resumo: subtotal ORIGINAL, frete, total (esperado 220,15,213):
+(220.0,15.0,213.0)
+Sem desconto (esperado 220,0,220):
+(220.0,0.0,220.0)
+Carrinho vazio (regra literal: 0,15,15):
+(0.0,15.0,15.0)
+Extensao separada: 10%, minimo 200, valores 199/200/220
+Esperados: 199,180,198 (sem frete)
+(199.0,180.0,198.0)
+
+
+$ ghc -Wall -Werror Cecilia.hs
+Compilacao OK, sem avisos.
+Execucao:
+Demonstracao da parte de Cecilia (sem frete nem resumo final)
+Subtotal de um item:
+35.0
+Total do carrinho:
+220.0
+Cupom de 10% para compras a partir de R$ 200:
+198.0
+Carrinho vazio:
+0.0
+
+
+$ ghc -Wall -Werror AplicarCupom.hs
+Compilacao OK, sem avisos.
+Execucao:
+== Testes de aplicarCupom ==
+OK    10% de 100 -> 90.0
+OK    0% de 100 (valor original) -> 100.0
+OK    100% de 100 (zero) -> 0.0
+OK    10% do carrinho de 220 -> 198.0
+OK    25% de 80 -> 60.0
+OK    10% de 0 (carrinho vazio) -> 0.0
+Passaram 6 de 6
+
+== Limites documentados (fora da faixa 0 a 100) ==
+aplicarCupom 150 100 = -50.0  (valor negativo)
+aplicarCupom (-10) 100 = 110.0  (vira acrescimo)
+
+== Transparencia referencial ==
+aplicarCupom 10 220 + 15 = 213.0
+198 + 15                 = 213.0
+Iguais? True
+
+
+$ ghc -Wall -Werror TestesCecilia.hs
+Compilacao OK, sem avisos.
+Execucao:
+OK: subtotal dez canetas
+OK: subtotal quantidade zero
+OK: subtotal preco zero
+OK: subtotal unitario
+OK: subtotal decimal
+OK: carrinho vazio
+OK: carrinho com um item
+OK: carrinho com dois itens
+OK: carrinho com item zerado
+OK: carrinho decimal
+OK: cupom abaixo do minimo
+OK: cupom no minimo
+OK: cupom acima do minimo
+OK: cupom zero porcento
+OK: cupom cem porcento
+OK: cupom minimo zero
+OK: cupom subtotal zero
+OK: transparencia subtotal
+OK: transparencia total
+Aprovados: 19/19
+
+
+$ ghc -Wall -Werror TestesVictor.hs
+Compilacao OK, sem avisos.
+Execucao:
+== Testes de calcularFrete (Victor) ==
+OK: Exemplo do enunciado | esperado: 15.0 | obtido: 15.0
+OK: Compra de valor zero | esperado: 15.0 | obtido: 15.0
+OK: Valor negativo: sem validacao adicional | esperado: 15.0 | obtido: 15.0
+OK: Compra de um centavo | esperado: 15.0 | obtido: 15.0
+OK: Abaixo do limite | esperado: 15.0 | obtido: 15.0
+OK: Um centavo abaixo do limite | esperado: 15.0 | obtido: 15.0
+OK: Exatamente no limite | esperado: 0.0 | obtido: 0.0
+OK: Um centavo acima do limite | esperado: 0.0 | obtido: 0.0
+OK: Acima do limite | esperado: 0.0 | obtido: 0.0
+OK: Cupom reduz 220 para 198: cobra frete | esperado: 15.0 | obtido: 15.0
+OK: Cupom reduz 250 para 200: frete gratis | esperado: 0.0 | obtido: 0.0
+OK: Cupom de 100%: valor zero ainda cobra frete | esperado: 15.0 | obtido: 15.0
+12 de 12 testes aprovados.
+
+
+$ ghc -Wall -Werror TestesLuiza.hs
+Compilacao OK, sem avisos.
+Execucao:
+OK: Sem desconto e com frete
+OK: Com desconto de 10%
+OK: Pedido com frete
+OK: Frete gratis acima de R$ 200
+OK: Carrinho vazio (frete de R$ 15 pelo contrato)
+OK: Subtotal zero por quantidade zero
+OK: R$ 199,99 apos desconto: paga frete
+OK: R$ 200 apos desconto: frete gratis
+OK: R$ 200,01 apos desconto: frete gratis
+OK: Cupom reduz R$ 200 para R$ 180 e gera frete
+OK: Cupom reduz R$ 250 para R$ 200: frete gratis
+OK: Soma de varios itens e total final
+OK: Desconto de 100%: frete continua R$ 15
+13 de 13 testes aprovados.
+
+
+Teste de regressao: reintroduzir localmente o subtotal descontado faz TestesLuiza falhar.
+Resultado: falha detectada; arquivo correto restaurado.
+
+$ gcc -std=c11 -Wall -Wextra -Werror -pedantic ComparacaoC.c -o comparacao
+Funcao com estado: 220.00 e 440.00
+Funcao pura: 220.00
+
+
+Verificacao final do exemplo obrigatorio:
+(220.0,15.0,213.0)

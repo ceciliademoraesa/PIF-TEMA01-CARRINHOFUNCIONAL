@@ -6,16 +6,8 @@
 --   runghc AplicarCupom.hs
 --   ghci AplicarCupom.hs   (depois: aplicarCupom 10 100)
 
--- | Aplica um cupom de desconto percentual sobre um valor.
---   Primeiro argumento: percentual do desconto (10 significa 10%).
---   Segundo argumento: valor sobre o qual o desconto e aplicado.
---   Funcao pura: o resultado depende so das entradas e nada fora dela muda.
---
---   Hipotese documentada: a funcao espera percentual entre 0 e 100.
---   Ela nao corrige valores fora dessa faixa, para nao mudar a regra do tema
---   em silencio (ver casos de limite nos testes).
-aplicarCupom :: Double -> Double -> Double
-aplicarCupom percentual valor = valor - valor * percentual / 100
+import Cupom (aplicarCupom)
+import System.Exit (exitFailure)
 
 -- | Um caso de teste: descricao, valor obtido e valor esperado.
 type Teste = (String, Double, Double)
@@ -63,3 +55,5 @@ main = do
   putStrLn ("aplicarCupom 10 220 + 15 = " ++ show a)
   putStrLn ("198 + 15                 = " ++ show b)
   putStrLn ("Iguais? " ++ show (a == b))
+
+  if quantosPassaram testes == length testes then pure () else exitFailure

@@ -19,9 +19,9 @@ Por isso, segui **o contrato oficial**. A função recebe:
 1. `itens`: lista de produtos. Cada `Item` é uma tupla `(nome, precoUnitario, quantidade)`, criada em `CarrinhoBase.hs`.
 2. `percentual`: percentual do cupom, como `10` para 10%.
 
-O resultado é a tupla `(subtotalComDesconto, frete, totalFinal)`.
+O resultado é a tupla `(subtotalOriginal, frete, totalFinal)`.
 
-**Importante:** no contrato, a palavra *subtotal* do resultado significa **subtotal após o desconto**; não é o valor original do carrinho.
+**Importante:** no contrato, a palavra *subtotal* do resultado significa **subtotal original, antes do desconto**. O frete e o total final usam o valor descontado.
 
 ## 3. Meu código explicado
 
@@ -33,7 +33,7 @@ import Cupom (aplicarCupom)
 import Frete (calcularFrete)
 
 resumoPedido :: [Item] -> Double -> (Double, Double, Double)
-resumoPedido itens percentual = (subtotalComDesconto, frete, totalFinal)
+resumoPedido itens percentual = (subtotalOriginal, frete, totalFinal)
   where
     subtotalOriginal = totalCarrinho itens
     subtotalComDesconto = aplicarCupom percentual subtotalOriginal
@@ -55,10 +55,10 @@ resumoPedido itens percentual = (subtotalComDesconto, frete, totalFinal)
 Uma tupla é uma forma de agrupar valores em posições fixas. Aqui ela tem três números `Double`:
 
 ```haskell
-(180.0, 15.0, 195.0)
+(200.0, 15.0, 195.0)
 ```
 
-Isso significa: **R$ 180 de produtos após desconto**, **R$ 15 de frete** e **R$ 195 de total final**. Podemos separar os valores assim:
+Isso significa: **R$ 200 de subtotal original**, **R$ 15 de frete** e **R$ 195 de total final**. Podemos separar os valores assim:
 
 ```haskell
 let (subtotal, frete, total) = resumoPedido [("Produto", 200, 1)] 10
@@ -87,16 +87,16 @@ resumoPedido [("Livro", 100, 1)] 0
 -- (100.0,15.0,115.0)
 
 resumoPedido [("Produto", 200, 1)] 10
--- (180.0,15.0,195.0)
+-- (200.0,15.0,195.0)
 
 resumoPedido [("Produto", 250, 1)] 20
--- (200.0,0.0,200.0)
+-- (250.0,0.0,200.0)
 
 resumoPedido [] 0
 -- (0.0,15.0,15.0)
 
 resumoPedido [("Caderno", 25, 4), ("Mochila", 120, 1)] 10
--- (198.0,15.0,213.0)
+-- (220.0,15.0,213.0)
 ```
 
 Esses são **resultados esperados** pelas regras do contrato (a representação decimal de `Double` pode variar). O contrato define frete de R$ 15 **mesmo para valor zero**; esta regra pode parecer diferente de lojas reais, mas foi mantida para respeitar o projeto.
@@ -116,7 +116,7 @@ Ou seja: **um carrinho de R$ 200 pode perder o frete grátis depois de receber 1
 
 ## 8. Roteiro de fala para o professor
 
-> Minha função é `resumoPedido`. Ela recebe uma lista de itens e a porcentagem de desconto. Primeiro, utiliza a função da Cecília para calcular o subtotal original. Depois, usa a função da Lívia para aplicar o cupom. Com esse novo valor, chama a função do Victor para descobrir o frete, que é grátis a partir de duzentos reais. Por fim, soma o valor com desconto ao frete e retorna uma tupla com os três resultados. É uma função pura porque não muda nenhuma variável externa e nem faz entrada e saída; os cálculos são feitos por meio de funções puras e valores imutáveis.
+> Minha função é `resumoPedido`. Ela recebe uma lista de itens e a porcentagem de desconto. Primeiro, utiliza a função da Cecília para calcular o subtotal original. Depois, usa a função da Lívia para aplicar o cupom. Com esse novo valor, chama a função do Victor para descobrir o frete, que é grátis a partir de duzentos reais. Por fim, soma o valor com desconto ao frete e retorna uma tupla com o subtotal original, o frete e o total final. É uma função pura porque não muda nenhuma variável externa e nem faz entrada e saída; os cálculos são feitos por meio de funções puras e valores imutáveis.
 
 ### Se o professor perguntar...
 
@@ -130,12 +130,10 @@ Ou seja: **um carrinho de R$ 200 pode perder o frete grátis depois de receber 1
 
 ## 9. Testes e integração
 
-O arquivo `TestesLuiza.hs` contém **13 cenários**: sem desconto, com desconto, com frete, frete grátis, carrinho vazio, subtotal zero, valores próximos de R$ 200, desconto que muda o frete, vários itens e conferência do total. Para executar quando os módulos estiverem presentes:
+O arquivo `TestesLuiza.hs` contém **13 cenários**: sem desconto, com desconto, com frete, frete grátis, carrinho vazio, subtotal zero, valores próximos de R$ 200, desconto que muda o frete, vários itens e conferência do total. Para executar com os módulos integrados:
 
 ```sh
 runghc TestesLuiza.hs
 ```
 
-Se algum caso falhar, o programa mostra o esperado e o obtido e encerra com código de erro. Os testes **dependem** das implementações reais de `Cupom.hs` e `Frete.hs`, que ainda não existiam na branch da Cecília durante a preparação. Não registrar a integração completa como concluída antes de testar os módulos reais juntos.
-
-A coordenação do grupo deverá integrar `Pedido.hs` junto a `Cupom.hs`, `Frete.hs` e `CarrinhoBase.hs`, validar as assinaturas e executar os testes de todos os integrantes.
+Se algum caso falhar, o programa mostra o esperado e o obtido e encerra com código de erro. Os testes usam os módulos reais integrados. A correção de integração preserva o subtotal original na primeira posição, conforme o enunciado.

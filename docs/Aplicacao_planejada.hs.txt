@@ -1,16 +1,3 @@
--- MODELO, NAO EXECUTAR ANTES DOS MODULOS DOS COLEGAS.
--- Renomear para Aplicacao.hs apos receber Cupom.hs, Frete.hs e Pedido.hs.
-import CarrinhoBase (totalCarrinho, cupomCondicional)
-import Cupom (aplicarCupom)
-import Frete (calcularFrete)
-import Pedido (resumoPedido)
-
-main :: IO ()
-main = do
-  let itens = [("Caderno", 25, 4), ("Mochila", 120, 1)]
-      subtotal = totalCarrinho itens
-  print subtotal
-  print (aplicarCupom 10 subtotal)
-  print (calcularFrete (aplicarCupom 10 subtotal))
-  print (resumoPedido itens 10)
-  print (cupomCondicional 10 200 subtotal)
+O modelo foi integrado em ../Aplicacao.hs.
+Execute na raiz: runghc Aplicacao.hs
+O programa usa as cinco funcoes obrigatorias e demonstra a extensao separadamente.

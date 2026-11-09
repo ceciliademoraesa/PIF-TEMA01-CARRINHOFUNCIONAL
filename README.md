@@ -8,6 +8,15 @@ O projeto usa um carrinho de compras para estudar funções puras, transparênci
 
 ## Estado atual
 
+### Contribuição de Victor nesta branch
+
+`Frete.hs` implementa `calcularFrete`, conforme o contrato de integração.
+Execute `runghc TestesVictor.hs` para conferir os 12 testes, incluindo os
+limites de R$ 200 e a composição com `Cupom.hs`. O roteiro e os comandos de
+compilação estão em [docs/PARTE_VICTOR.md](docs/PARTE_VICTOR.md), que também
+registra uma divergência preexistente em `resumoPedido` para a integração.
+As seções abaixo preservam o planejamento original da equipe.
+
 A parte de Cecília foi reconstruída, com testes preparados para execução: `subtotalItem`, `totalCarrinho`, extensão `cupomCondicional`, exemplo conceitual, demonstração parcial, testes e comparação em C. As outras três funções obrigatórias ainda serão implementadas pelos responsáveis abaixo. Portanto, a aplicação completa e a síntese final da equipe ainda não estão concluídas.
 
 Este pacote foi organizado para envio manual em uma branch. As contribuições dos colegas ainda não estão incluídas.

@@ -1,0 +1,147 @@
+DESAFIO INVESTIGATIVO - registro dos experimentos no GHCi
+Tema 01: Funcoes puras em um carrinho de compras
+Responsavel: Livia
+Ambiente: GHC 9.4.7 (The Glorious Glasgow Haskell Compilation System)
+
+Todas as saidas abaixo foram copiadas da execucao real.
+O experimento 2 falha de proposito e por isso NAO fica em nenhum .hs do repositorio.
+
+
+====================================================================
+EXPERIMENTO 1 - Que tipo tem getLine?
+====================================================================
+Comando:  ghci AplicarCupom.hs
+
+ghci> :t getLine
+getLine :: IO String
+ghci> :t putStrLn
+putStrLn :: String -> IO ()
+ghci> :t aplicarCupom
+aplicarCupom :: Double -> Double -> Double
+ghci> :t aplicarCupom 10
+aplicarCupom 10 :: Double -> Double
+ghci> :t aplicarCupom 10 100
+aplicarCupom 10 100 :: Double
+
+Leitura: getLine nao e uma String. E uma ACAO (IO) que, quando executada,
+produz uma String. aplicarCupom nao tem IO no tipo, entao e pura.
+aplicarCupom 10 sozinho ja e uma funcao nova: "o cupom de 10%".
+
+
+====================================================================
+EXPERIMENTO 2 - Usar putStrLn dentro de uma funcao declarada pura
+====================================================================
+Arquivo de teste (ErroIO.hs, fora do repositorio final):
+
+  saudacao :: String -> String
+  saudacao nome = putStrLn ("Ola, " ++ nome)
+
+  main :: IO ()
+  main = putStrLn (saudacao "Turma")
+
+Comando:  ghci ErroIO.hs
+
+ErroIO.hs:3:17: error:
+    * Couldn't match type: IO ()
+                     with: [Char]
+      Expected: String
+        Actual: IO ()
+    * In the expression: putStrLn ("Ola, " ++ nome)
+      In an equation for `saudacao':
+          saudacao nome = putStrLn ("Ola, " ++ nome)
+  |
+3 | saudacao nome = putStrLn ("Ola, " ++ nome)
+  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Leitura: a assinatura promete devolver String ([Char]), mas putStrLn devolve
+IO (), uma acao de imprimir. O compilador recusa o programa antes de rodar.
+Uma funcao marcada como pura nao consegue fazer efeito colateral escondido.
+
+
+====================================================================
+EXPERIMENTO 3 - Usar getLine no meio de uma expressao pura
+====================================================================
+ghci> length getLine
+
+<interactive>:1:1: error:
+    * No instance for (Foldable IO) arising from a use of `length'
+    * In the expression: length getLine
+      In an equation for `it': it = length getLine
+
+Leitura: length espera uma lista (String), e getLine e IO String.
+Nao da para tratar a acao como se fosse o texto ja lido.
+
+
+====================================================================
+EXPERIMENTO 4 - Transparencia referencial com aplicarCupom
+====================================================================
+ghci> aplicarCupom 10 220
+198.0
+ghci> aplicarCupom 10 220
+198.0
+ghci> aplicarCupom 10 220 + 15 == 198 + 15
+True
+ghci> let x = aplicarCupom 10 100 in x + x
+180.0
+ghci> aplicarCupom 10 100 + aplicarCupom 10 100
+180.0
+
+Leitura: a mesma chamada sempre devolve o mesmo valor, e trocar a chamada
+pelo resultado (ou guardar num nome e reaproveitar) nao muda a expressao maior.
+
+
+====================================================================
+EXPERIMENTO 5 - O sistema de tipos barrando entrada errada
+====================================================================
+ghci> aplicarCupom "10" 100
+
+<interactive>:1:14: error:
+    * Couldn't match type `[Char]' with `Double'
+      Expected: Double
+        Actual: String
+    * In the first argument of `aplicarCupom', namely `"10"'
+      In the expression: aplicarCupom "10" 100
+      In an equation for `it': it = aplicarCupom "10" 100
+
+
+====================================================================
+EXPERIMENTO 6 - Ponto flutuante e limites de aplicarCupom
+====================================================================
+ghci> aplicarCupom 10 19.9
+17.91
+ghci> aplicarCupom 15 39.9
+33.915
+ghci> aplicarCupom 10 0.7
+0.6299999999999999
+ghci> aplicarCupom 150 100
+-50.0
+ghci> aplicarCupom (-10) 100
+110.0
+
+Leitura: Double e ponto flutuante binario, entao alguns valores saem com
+erro na ultima casa (0.63 virou 0.6299999999999999). Por isso os testes
+comparam com tolerancia (quaseIgual). Percentuais fora de 0 a 100 geram
+resultados sem sentido para um carrinho; isso foi documentado como limitacao
+em vez de mudar a regra do tema.
+
+
+====================================================================
+TESTES DA FUNCAO - runghc AplicarCupom.hs
+====================================================================
+== Testes de aplicarCupom ==
+OK    10% de 100 -> 90.0
+OK    0% de 100 (valor original) -> 100.0
+OK    100% de 100 (zero) -> 0.0
+OK    10% do carrinho de 220 -> 198.0
+OK    25% de 80 -> 60.0
+OK    10% de 0 (carrinho vazio) -> 0.0
+Passaram 6 de 6
+
+== Limites documentados (fora da faixa 0 a 100) ==
+aplicarCupom 150 100 = -50.0  (valor negativo)
+aplicarCupom (-10) 100 = 110.0  (vira acrescimo)
+
+== Transparencia referencial ==
+aplicarCupom 10 220 + 15 = 213.0
+198 + 15                 = 213.0
+Iguais? True
